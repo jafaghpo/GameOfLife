@@ -23,7 +23,7 @@ const renderLoop = async () =>
 	prev_map = map;
 	universe.tick();
 
-	await sleep(1000);
+	await sleep(200);
 	if (iteration < 100)
 	{
 		requestAnimationFrame(renderLoop);
