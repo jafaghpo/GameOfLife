@@ -10,13 +10,8 @@ mod utils;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
-pub fn init()
+extern
 {
-	utils::set_panic_hook();
-}
-
-#[wasm_bindgen]
-extern {
     fn alert(s: &str);
 }
 
@@ -50,6 +45,7 @@ impl Universe
 {
 	pub fn new(width: u32, height: u32) -> Self
 	{
+		utils::set_panic_hook();
         let cells = (0..width * height)
 			.map(|_| Cell::from(random() < 0.5))
 			.collect();
@@ -72,17 +68,6 @@ impl Universe
         (row * self.width + column) as usize
     }
 
-	// fn live_neighbor_count(&self, row: u32, column: u32) -> u8
-	// {
-	// 	let delta_row = vec![self.width - 1, 0, 1];
-	// 	let delta_col = vec![self.height - 1, 0, 1];
-	// 	delta_col.iter().zip(delta_row.iter()).fold(0, |sum, (delta_col, delta_row)|
-	// 	{
-	// 		let neighbor_row = (row + delta_row) % self.height;
-    //         let neighbor_col = (column + delta_col) % self.width;
-	// 		sum + self.cells[self.get_index(neighbor_row, neighbor_col)] as u8
-	// 	})
-	// }
 	fn live_neighbor_count(&self, row: u32, column: u32) -> u8
 	{
 		let mut count = 0;
@@ -152,6 +137,25 @@ impl Universe
 			}
 		}
 		neighbor
+	}
+}
+
+impl Universe
+{
+	pub fn get_cells(&self) -> &[Cell]
+	{
+		&self.cells
+	}
+
+	/// Set cells to be alive in a universe by passing the row and column
+	/// of each cell as an array.
+	pub fn set_cells(&mut self, cells: &[(u32, u32)])
+	{
+		for (row, col) in cells.iter().cloned()
+		{
+			let idx = self.get_index(row, col);
+			self.cells[idx] = Cell::Alive;
+		}
 	}
 }
 

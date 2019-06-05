@@ -1,16 +1,13 @@
 import { memory } from "wasm-game-of-life/game_of_life_bg";
-import { init, Universe, Cell } from "wasm-game-of-life";
-
-// Initialize console error panic
-init();
+import { Universe, Cell } from "wasm-game-of-life";
 
 // Constants
-const height = 145;
+const height = 100;
 const width = 310;
-const CELL_SIZE = 5; // px
-const GRID_COLOR = "#CCCCCC";
-const DEAD_COLOR = "#FFFFFF";
-const ALIVE_COLOR = "#000000";
+const CELL_SIZE = 6; // px
+const GRID_COLOR = "#121212";
+const DEAD_COLOR = "#121212";
+const ALIVE_COLOR = "#dc44ff";
 const universe = Universe.new(width, height);
 
 // Utils functions
