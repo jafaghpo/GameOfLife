@@ -57,6 +57,11 @@ impl Universe
         Self { width, height, cells }
 	}
 
+	pub fn cells(&self) -> *const Cell
+	{
+		self.cells.as_ptr()
+	}
+
 	pub fn render(&self) -> String
 	{
 		self.to_string()
@@ -67,16 +72,33 @@ impl Universe
         (row * self.width + column) as usize
     }
 
+	// fn live_neighbor_count(&self, row: u32, column: u32) -> u8
+	// {
+	// 	let delta_row = vec![self.width - 1, 0, 1];
+	// 	let delta_col = vec![self.height - 1, 0, 1];
+	// 	delta_col.iter().zip(delta_row.iter()).fold(0, |sum, (delta_col, delta_row)|
+	// 	{
+	// 		let neighbor_row = (row + delta_row) % self.height;
+    //         let neighbor_col = (column + delta_col) % self.width;
+	// 		sum + self.cells[self.get_index(neighbor_row, neighbor_col)] as u8
+	// 	})
+	// }
 	fn live_neighbor_count(&self, row: u32, column: u32) -> u8
 	{
-		let delta_row = vec![self.width - 1, 0, 1];
-		let delta_col = vec![self.height - 1, 0, 1];
-		delta_col.iter().zip(delta_row.iter()).fold(0, |sum, (delta_col, delta_row)|
+		let mut count = 0;
+		for delta_row in [self.height - 1, 0, 1].iter().cloned()
 		{
-			let neighbor_row = (row + delta_row) % self.height;
-            let neighbor_col = (column + delta_col) % self.width;
-			sum + self.cells[self.get_index(neighbor_row, neighbor_col)] as u8
-		})
+			for delta_col in [self.width - 1, 0, 1].iter().cloned()
+			{
+				if delta_row == 0 && delta_col == 0 { continue }
+
+				let neighbor_row = (row + delta_row) % self.height;
+				let neighbor_col = (column + delta_col) % self.width;
+				let idx = self.get_index(neighbor_row, neighbor_col);
+				count += self.cells[idx] as u8;
+			}
+		}
+		count
 	}
 
 	pub fn tick(&mut self)
@@ -116,6 +138,20 @@ impl Universe
 			}
 		}
 		self.cells = next;
+	}
+
+	pub fn display_neighbor(&self) -> Vec<u8>
+	{
+		let mut neighbor = vec![];
+		for row in 0..self.height
+		{
+			for col in 0..self.width
+			{
+				let live_neighbors = self.live_neighbor_count(row, col);
+				neighbor.push(live_neighbors);
+			}
+		}
+		neighbor
 	}
 }
 
